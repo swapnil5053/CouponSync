@@ -1,0 +1,16 @@
+# Root GitIgnore
+node_modules/
+**/node_modules/
+**/package-lock.json
+**/yarn.lock
+**/dist/
+**/build/
+.env
+**/.env
+**/.env.*
+*.log
+**/*.log
+.DS_Store
+**/.DS_Store
+.vscode/
+**/.vscode/

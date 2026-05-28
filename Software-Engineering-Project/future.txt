@@ -1,0 +1,264 @@
+🧩 PROJECT CONTEXT PROMPT (COPY THIS)
+
+Project Name: Virtual Coupon Distribution System (VCDS)
+
+🧾 GOAL
+
+We are building a full-stack web application for Virtual Coupon Distribution and Redemption (VCDS) using:
+
+Frontend: React (via create-react-app)
+
+Backend: Node.js + Express
+
+Database: MySQL
+
+APIs: RESTful routes for campaigns, coupons, redemptions, and reports
+
+The goal is to implement the system step by step according to five Jira Epics and their respective user stories.
+
+📘 JIRA EPICS & USER STORIES
+🟩 EPIC 1: Coupon Campaign Management
+
+Epic Description: Manage creation, updates, and scheduling of coupon campaigns.
+
+User Stories:
+
+Create Coupon Campaign
+
+Edit or Update Active Campaigns
+
+View Campaign List & Status
+
+Schedule Campaign Activation
+
+Validate Campaign Inputs
+
+🟩 EPIC 2: Coupon Code Generation & Security
+
+Epic Description: Ensure coupon codes are unique, random, and secure.
+
+User Stories:
+
+Generate Unique Coupon Codes
+
+Ensure Code Randomness
+
+Encrypt Coupon Data
+
+Apply Code Expiration Rules
+
+Prevent Duplicate Code Generation
+
+🟩 EPIC 3: Coupon Distribution Module
+
+Epic Description: Distribute coupons through multiple channels (Email, SMS, QR, etc.)
+
+User Stories:
+
+Distribute Coupons via Email
+
+Distribute Coupons via SMS
+
+Generate and Share QR Codes
+
+Retry Failed Deliveries
+
+Integrate APIs for Communication
+
+🟩 EPIC 4: Coupon Redemption & Fraud Detection
+
+Epic Description: Implement secure and validated redemption flow.
+
+User Stories:
+
+Validate Coupon on Redemption
+
+Prevent Duplicate Redemptions
+
+Log Redemption Attempts
+
+Detect Fraudulent Patterns
+
+Handle Expired or Invalid Coupons
+
+🟩 EPIC 5: Reporting, Analytics & Access Control
+
+Epic Description: Provide analytics, reports, and user-role-based access control.
+
+User Stories:
+
+Generate Merchant Reports
+
+View Redemption Analytics Dashboard
+
+Apply RBAC Permissions
+
+System Performance Validation
+
+Export Reports in Multiple Formats
+
+🧱 BACKEND SETUP
+
+Tech: Node.js + Express + MySQL
+
+Folder Structure
+backend/
+├── server.js
+├── db.js
+├── routes/
+│   ├── coupons.js
+│   ├── campaigns.js
+│   ├── reports.js
+├── .env
+├── package.json
+
+Main APIs Implemented So Far
+Endpoint	Method	Description
+/api/coupons/generate	POST	Generate new coupons (with unique codes, insert into DB)
+/api/coupons/redeem	POST	Redeem coupon, mark as used, and log redemption
+/api/campaigns	GET	Get all campaigns
+/api/campaigns	POST	Create new campaign
+/api/reports/merchant/:id	GET	Generate merchant report showing issued vs. redeemed coupons
+✅ MySQL Schema (Current)
+
+Database: vcds
+
+Tables:
+
+users — Stores users (admin, merchant, customer)
+
+campaigns — Coupon campaign info
+
+coupons — Coupon codes with status (redeemed / not redeemed)
+
+redemptions — Redemption logs
+
+delivery_attempts — Tracks email/SMS send attempts
+
+merchant_stats — Aggregate data for reports
+
+notifications — Messages sent to users
+
+system_logs — Admin and merchant actions
+
+All tables have been verified and foreign keys are correctly linked.
+
+🔑 Sample Backend Flow Tested
+
+✅ Generate Coupons
+
+curl -X POST http://localhost:5000/api/coupons/generate \
+  -H "Content-Type: application/json" \
+  -d "{\"campaignId\":1,\"count\":3,\"channel\":\"email\",\"recipients\":[\"customer1@example.com\",\"customer2@example.com\",\"customer3@example.com\"]}"
+
+
+Response:
+
+{"createdCount":3,"coupons":[{"id":11,"code":"8HPHIVVP"}, ... ]}
+
+
+✅ Redeem Coupon
+
+curl -X POST http://localhost:5000/api/coupons/redeem \
+  -H "Content-Type: application/json" \
+  -d "{\"code\":\"8HPHIVVP\",\"userIdentifier\":\"customer1@example.com\"}"
+
+
+Response:
+
+{"message":"Coupon redeemed","couponId":11,"campaignId":1}
+
+
+✅ MySQL Verification
+
+coupons.redeemed → updated to 1
+
+new entry in redemptions for audit
+
+delivery_attempts entries created on generation
+
+🎨 FRONTEND SETUP (React)
+
+Created with:
+
+npx create-react-app frontend
+cd frontend
+npm install axios react-router-dom
+
+Folder Structure
+frontend/
+├── src/
+│   ├── pages/
+│   │   ├── Dashboard.js
+│   │   ├── Campaigns.js
+│   │   ├── GenerateCoupons.js
+│   │   ├── Redeem.js
+│   │   └── Reports.js
+│   ├── services/
+│   │   └── api.js
+│   ├── App.js
+│   └── index.js
+
+Frontend Features Implemented
+Page	Description
+Dashboard	Intro page for navigation
+Campaigns	Create and view campaigns
+Generate Coupons	Call backend API to generate coupons
+Redeem	Redeem coupon by code and user email
+Reports	View redemption statistics (merchant 2 sample)
+✅ Frontend & Backend Connection
+
+api.js connects frontend to backend at http://localhost:5000/api
+
+All routes tested and returning correct data
+
+No Tailwind, plain React styling
+
+⚙️ CURRENT STATUS
+
+✅ Backend
+✅ MySQL Schema
+✅ API Testing Successful
+✅ Frontend integrated with APIs
+
+🚀 NEXT STEPS
+
+Add Authentication (JWT + RBAC)
+
+Roles: admin, merchant, customer
+
+Restrict access to routes and pages
+
+Add Real Email/SMS Sending
+
+Integrate with SendGrid / Twilio
+
+Add QR Code Generation for Coupons
+
+Generate scannable coupon links
+
+Add Analytics Dashboard
+
+Graphs for campaign performance
+
+Export Reports (CSV / PDF)
+
+Allow merchants to download analytics
+
+Fraud Detection Module
+
+Detect duplicate or suspicious redemption behavior
+
+🧠 TL;DR Summary
+
+We have:
+
+Set up a working backend (Express + MySQL) with core coupon logic.
+
+Verified generation + redemption via curl and database.
+
+Built a React frontend to interact with the system.
+
+Covered all Jira epics and user stories conceptually.
+
+Next: Add authentication, analytics, and advanced features.
