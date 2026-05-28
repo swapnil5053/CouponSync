@@ -28,32 +28,32 @@ jobs:
         id: cache
         with:
           path: |
-            backend/node_modules
-            frontend/node_modules
+            Software-Engineering-Project/backend/node_modules
+            Software-Engineering-Project/frontend/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-modules-
 
       - name: Install backend dependencies
-        working-directory: ./backend
+        working-directory: ./Software-Engineering-Project/backend
         run: |
           echo "📦 Installing backend dependencies..."
           if [ -f package-lock.json ]; then npm ci --legacy-peer-deps; else npm install --legacy-peer-deps; fi
 
       - name: Install frontend dependencies
-        working-directory: ./frontend
+        working-directory: ./Software-Engineering-Project/frontend
         run: |
           echo "📦 Installing frontend dependencies..."
           if [ -f package-lock.json ]; then npm ci --legacy-peer-deps; else npm install --legacy-peer-deps; fi
 
       - name: Build backend
-        working-directory: ./backend
+        working-directory: ./Software-Engineering-Project/backend
         run: |
           echo "🏗️  Building backend..."
           npm run build || echo "⚠️  No backend build script"
 
       - name: Build frontend
-        working-directory: ./frontend
+        working-directory: ./Software-Engineering-Project/frontend
         env:
           CI: false
         run: |
@@ -65,13 +65,13 @@ jobs:
           mkdir -p artifacts
           ART=artifacts/build-output.zip
           # include frontend output
-          if [ -d "frontend/build" ]; then zip -r "$ART" frontend/build || true; fi
-          if [ -d "frontend/.next" ]; then zip -r "$ART" frontend/.next || true; fi
+          if [ -d "Software-Engineering-Project/frontend/build" ]; then zip -r "$ART" Software-Engineering-Project/frontend/build || true; fi
+          if [ -d "Software-Engineering-Project/frontend/.next" ]; then zip -r "$ART" Software-Engineering-Project/frontend/.next || true; fi
           # include backend output
-          if [ -d "backend/dist" ]; then zip -r "$ART" backend/dist || true; fi
+          if [ -d "Software-Engineering-Project/backend/dist" ]; then zip -r "$ART" Software-Engineering-Project/backend/dist || true; fi
           # include package.json for reference
-          [ -f frontend/package.json ] && zip -ur "$ART" frontend/package.json || true
-          [ -f backend/package.json ] && zip -ur "$ART" backend/package.json || true
+          [ -f Software-Engineering-Project/frontend/package.json ] && zip -ur "$ART" Software-Engineering-Project/frontend/package.json || true
+          [ -f Software-Engineering-Project/backend/package.json ] && zip -ur "$ART" Software-Engineering-Project/backend/package.json || true
           # ensure artifact exists (create placeholder if nothing to zip)
           if [ ! -f "$ART" ]; then
             echo "No build outputs found" > artifacts/NO_BUILD_OUTPUT.txt
@@ -106,15 +106,15 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            backend/node_modules
-            frontend/node_modules
+            Software-Engineering-Project/backend/node_modules
+            Software-Engineering-Project/frontend/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-modules-
 
       - name: Install deps if missing
         run: |
-          cd backend
+          cd Software-Engineering-Project/backend
           if [ ! -d node_modules ]; then
             if [ -f package-lock.json ]; then npm ci --legacy-peer-deps; else npm install --legacy-peer-deps; fi
           fi
@@ -122,28 +122,28 @@ jobs:
           if [ ! -d node_modules ]; then
             if [ -f package-lock.json ]; then npm ci --legacy-peer-deps; else npm install --legacy-peer-deps; fi
           fi
-          cd ..
+          cd ../..
 
       - name: Run ESLint (backend -> json report)
-        working-directory: ./backend
+        working-directory: ./Software-Engineering-Project/backend
         run: |
-          mkdir -p ../lint
+          mkdir -p ../../lint
           if find . -name '*.js' -print -quit >/dev/null 2>&1; then
-            npx eslint . --ext .js --format json -o ../lint/backend-eslint.json || true
+            npx eslint . --ext .js --format json -o ../../lint/backend-eslint.json || true
           else
-            echo "{}" > ../lint/backend-eslint.json
+            echo "{}" > ../../lint/backend-eslint.json
           fi
 
       - name: Run ESLint (frontend -> json report)
-        working-directory: ./frontend
+        working-directory: ./Software-Engineering-Project/frontend
         env:
           CI: true
         run: |
-          mkdir -p ../lint
+          mkdir -p ../../lint
           if [ -d src ] && find src -name '*.js' -o -name '*.jsx' | grep -q .; then
-            npx eslint src --ext .js,.jsx --format json -o ../lint/frontend-eslint.json || true
+            npx eslint src --ext .js,.jsx --format json -o ../../lint/frontend-eslint.json || true
           else
-            echo "{}" > ../lint/frontend-eslint.json
+            echo "{}" > ../../lint/frontend-eslint.json
           fi
 
       - name: (optional) Run pylint (if Python files exist)
@@ -186,15 +186,15 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            backend/node_modules
-            frontend/node_modules
+            Software-Engineering-Project/backend/node_modules
+            Software-Engineering-Project/frontend/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-modules-
 
       - name: Install deps if missing
         run: |
-          cd backend
+          cd Software-Engineering-Project/backend
           if [ ! -d node_modules ]; then
             if [ -f package-lock.json ]; then npm ci --legacy-peer-deps; else npm install --legacy-peer-deps; fi
           fi
@@ -204,13 +204,13 @@ jobs:
           fi
 
       - name: Backend unit tests
-        working-directory: ./backend
+        working-directory: ./Software-Engineering-Project/backend
         run: |
           echo "🧪 Running backend tests..."
           npm test -- --passWithNoTests --coverage || true
 
       - name: Frontend unit tests
-        working-directory: ./frontend
+        working-directory: ./Software-Engineering-Project/frontend
         env:
           CI: true
         run: |
@@ -223,8 +223,8 @@ jobs:
         with:
           name: coverage-reports
           path: |
-            backend/coverage/
-            frontend/coverage/
+            Software-Engineering-Project/backend/coverage/
+            Software-Engineering-Project/frontend/coverage/
           retention-days: 7
 
   coverage:
@@ -242,7 +242,7 @@ jobs:
       - name: Check coverage files
         run: |
           echo "🔎 Checking coverage outputs..."
-          if ls coverage-artifacts/backend/coverage 1> /dev/null 2>&1 || ls coverage-artifacts/frontend/coverage 1> /dev/null 2>&1; then
+          if ls coverage-artifacts/Software-Engineering-Project/backend/coverage 1> /dev/null 2>&1 || ls coverage-artifacts/Software-Engineering-Project/frontend/coverage 1> /dev/null 2>&1; then
             echo "✅ Coverage reports found"
           else
             echo "⚠️ Coverage reports not found"
@@ -269,15 +269,15 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            backend/node_modules
-            frontend/node_modules
+            Software-Engineering-Project/backend/node_modules
+            Software-Engineering-Project/frontend/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-modules-
 
       - name: Install deps if missing
         run: |
-          cd backend
+          cd Software-Engineering-Project/backend
           if [ ! -d node_modules ]; then
             if [ -f package-lock.json ]; then npm ci --legacy-peer-deps; else npm install --legacy-peer-deps; fi
           fi
@@ -287,14 +287,14 @@ jobs:
           fi
 
       - name: Run npm audit (backend)
-        working-directory: ./backend
+        working-directory: ./Software-Engineering-Project/backend
         run: |
           echo "🛡️  Running npm audit for backend..."
           npm audit --json > audit-backend.json || true
           cat audit-backend.json || true
 
       - name: Run npm audit (frontend)
-        working-directory: ./frontend
+        working-directory: ./Software-Engineering-Project/frontend
         run: |
           echo "🛡️  Running npm audit for frontend..."
           npm audit --json > audit-frontend.json || true
@@ -305,8 +305,8 @@ jobs:
         with:
           name: audit-reports
           path: |
-            backend/audit-backend.json
-            frontend/audit-frontend.json
+            Software-Engineering-Project/backend/audit-backend.json
+            Software-Engineering-Project/frontend/audit-frontend.json
           retention-days: 7
 
   deploy:
@@ -344,17 +344,17 @@ jobs:
       - name: Deploy extracted build (placeholder)
         run: |
           echo "🚀 Deploying to ${{ github.ref }} (replace with real deploy commands)"
-          if [ -d "artifacts/extracted/frontend/build" ]; then
+          if [ -d "artifacts/extracted/Software-Engineering-Project/frontend/build" ]; then
             echo "Deploying static frontend..."
-            # scp -r artifacts/extracted/frontend/build/ user@server:/path || true
+            # scp -r artifacts/extracted/Software-Engineering-Project/frontend/build/ user@server:/path || true
           fi
-          if [ -d "artifacts/extracted/frontend/.next" ]; then
+          if [ -d "artifacts/extracted/Software-Engineering-Project/frontend/.next" ]; then
             echo "Deploying Next.js frontend..."
-            # scp -r artifacts/extracted/frontend/.next/ user@server:/path || true
+            # scp -r artifacts/extracted/Software-Engineering-Project/frontend/.next/ user@server:/path || true
           fi
-          if [ -d "artifacts/extracted/backend/dist" ]; then
+          if [ -d "artifacts/extracted/Software-Engineering-Project/backend/dist" ]; then
             echo "Deploying backend..."
-            # scp -r artifacts/extracted/backend/dist/ user@server:/path || true
+            # scp -r artifacts/extracted/Software-Engineering-Project/backend/dist/ user@server:/path || true
           fi
 
       - name: Smoke tests (placeholder)
