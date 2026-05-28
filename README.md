@@ -220,6 +220,26 @@ The sample data included in the project supports role-based testing:
 
 ---
 
+## Git & CI/CD Notes: Resolving Monorepo Path & Cache Issues
+
+During the integration and deployment pipeline setup, the following standard monorepo configuration issues were encountered and resolved:
+
+1. **Ignored Lockfiles vs. CI/CD Caching**: 
+   - *Issue*: The dependency lockfiles (`package-lock.json`) were originally ignored in `.gitignore`, preventing them from being pushed to GitHub. This caused `actions/setup-node@v4` in CI to fail because it requires lockfiles to cache dependencies.
+   - *Fix*: Removed `package-lock.json` from all `.gitignore` configurations, staged the actual lockfiles, and pushed them to enable caching.
+
+2. **Legacy Text File Pointers vs. Directory Paths**:
+   - *Issue*: Root-level links like `backend` and `frontend` were tracked in git as regular text files rather than directories, causing the GitHub Actions runner to crash with a `Not a directory` error when initializing the step's working directory.
+   - *Fix*: Removed the legacy pointer files and configured the `.github/workflows/ci-cd.yaml` to point explicitly to the real project directories `./Software-Engineering-Project/backend` and `./Software-Engineering-Project/frontend`.
+
+### Learn More
+To learn more about Gitignore rules, symlinks, and caching in CI/CD pipelines, check out these in-depth resources:
+- [Atlassian Gitignore Tutorial](https://www.atlassian.com/git/tutorials/saving-changes/gitignore)
+- [Pro Git Book - Customizing Git](https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration)
+- [GitHub Actions - Caching dependencies to speed up workflows](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows)
+
+---
+
 ## Contributors
 
 | Member                                      | Role         |
