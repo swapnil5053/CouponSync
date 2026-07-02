@@ -1,6 +1,6 @@
-# Virtual Coupon Distribution System
+# CouponSync
 
-A full-stack platform where merchants create and distribute discount coupons, and customers validate and redeem them in real time. Built with Node.js, Express, MySQL, and React.
+A full-stack Virtual Coupon Distribution platform where merchants create and distribute discount coupons, and customers validate and redeem them in real time. Built with Node.js, Express, MySQL, and React.
 
 ---
 
